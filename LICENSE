@@ -1,0 +1,107 @@
+const form = document.getElementById('unblock-form');
+const urlInput = document.getElementById('target-url');
+const statusMessage = document.getElementById('status-message');
+const previewOutput = document.getElementById('preview-output');
+const sourceLink = document.getElementById('source-link');
+const quickLinks = document.querySelectorAll('.quick-link');
+
+const setStatus = (message, tone = 'default') => {
+  statusMessage.textContent = message;
+  statusMessage.style.color = tone === 'error' ? '#fca5a5' : tone === 'success' ? '#86efac' : '#9ca3af';
+};
+
+const normalizeUrl = (rawValue) => {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+};
+
+const buildProxyUrl = (targetUrl) => {
+  const parsed = new URL(targetUrl);
+  const hostAndPath = `${parsed.host}${parsed.pathname}${parsed.search}`;
+  return `https://r.jina.ai/http://${hostAndPath}`;
+};
+
+const renderPreview = (text, targetUrl) => {
+  const safeText = String(text || '').trim();
+  previewOutput.innerHTML = safeText
+    ? `<pre>${escapeHtml(safeText)}</pre>`
+    : '<p class="placeholder">No content was returned for that URL.</p>';
+
+  sourceLink.href = targetUrl;
+  sourceLink.textContent = 'Open original';
+};
+
+const escapeHtml = (value) => {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
+const fetchReadablePreview = async (targetUrl) => {
+  const proxyUrl = buildProxyUrl(targetUrl);
+  const response = await fetch(proxyUrl, {
+    headers: {
+      Accept: 'text/plain, text/markdown, */*',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Proxy returned ${response.status}`);
+  }
+
+  return response.text();
+};
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const rawUrl = urlInput.value;
+  const targetUrl = normalizeUrl(rawUrl);
+
+  if (!targetUrl) {
+    setStatus('Please enter a valid URL.', 'error');
+    return;
+  }
+
+  try {
+    setStatus('Fetching a readable preview...');
+    previewOutput.innerHTML = '<p class="placeholder">Loading preview…</p>';
+
+    const content = await fetchReadablePreview(targetUrl);
+    renderPreview(content, targetUrl);
+    setStatus(`Showing a readable preview for ${targetUrl}`, 'success');
+  } catch (error) {
+    console.error(error);
+    previewOutput.innerHTML = `
+      <p class="placeholder">
+        The preview could not be loaded for that URL. It may be blocked by the site or by the proxy service.
+      </p>
+    `;
+    setStatus('Unable to load the preview for that URL.', 'error');
+  }
+});
+
+quickLinks.forEach((button) => {
+  button.addEventListener('click', () => {
+    const value = button.dataset.url;
+    urlInput.value = value;
+    form.requestSubmit();
+  });
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  sourceLink.href = '#';
+  sourceLink.textContent = 'Open original';
+});
+
