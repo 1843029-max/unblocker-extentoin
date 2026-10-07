@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unblocker - Web Proxy</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-badge">U</div>
+          <div>
+            <p class="eyebrow">Web Proxy</p>
+            <h1>Unblocker</h1>
+          </div>
+        </div>
+      </header>
+
+      <main class="app-card">
+        <section class="controls">
+          <form id="unblock-form">
+            <label class="sr-only" for="target-url">Website URL</label>
+            <div class="input-row">
+              <input
+                id="target-url"
+                name="target-url"
+                type="url"
+                placeholder="https://example.com"
+                autocomplete="off"
+                required
+              />
+              <button type="submit" id="submit-btn">Unblock</button>
+            </div>
+          </form>
+
+          <div class="quick-links" aria-label="Quick links">
+            <button type="button" class="quick-link" data-url="https://example.com">Example</button>
+            <button type="button" class="quick-link" data-url="https://developer.mozilla.org/en-US/">MDN</button>
+            <button type="button" class="quick-link" data-url="https://www.wikipedia.org/">Wikipedia</button>
+          </div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <p id="status-message">Enter a URL and click Unblock to access the website.</p>
+        </section>
+
+        <section class="result-panel">
+          <div class="result-header">
+            <h2>Preview</h2>
+            <a id="source-link" href="#" target="_blank" rel="noopener noreferrer">Open in new tab</a>
+          </div>
+
+          <article id="preview-output" class="preview-output">
+            <p class="placeholder">The page preview will appear here.</p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
