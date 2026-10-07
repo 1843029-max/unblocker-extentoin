@@ -1,28 +1,34 @@
-# Unblocker
+# Unblocker Proxy
 
-A lightweight demo web app that lets you paste a URL and view a readable text preview through a public proxy endpoint.
+A lightweight Node.js proxy and web interface for fetching a website and showing a readable preview.
 
 ## Features
 
-- Paste any website URL
-- Converts it into a readable preview
-- Includes quick links for testing
-- Works as a static page without a build step
+- Proxy endpoint that fetches a target URL server-side
+- Simple browser UI for entering a URL
+- Quick test links
+- CORS enabled for browser access
+- Requires no build step
 
-## Run locally
-
-From the project folder:
+## Quick start
 
 ```bash
-python3 -m http.server 8000
+npm install
+npm start
 ```
 
 Then open:
 
 ```text
-http://localhost:8000
+http://localhost:3000
 ```
+
+## API
+
+GET `/api/proxy?url=https://example.com`
+
+Returns JSON with the fetched page HTML.
 
 ## Notes
 
-This app is intended for educational/demo use. Please respect website terms of service and copyright rules.
+This project is intended for educational and local use only. Please respect website terms of service and copyright rules.
